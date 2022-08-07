@@ -22,14 +22,14 @@ All the data were stored on the project named [ub7](http://www.bom.gov.au/metada
 
 ## Results
 ### CRPS comparison
-| ![space-1.jpg](/img/CRPS_SS_2012.pdf) | 
+| ![space-1.png](/img/CRPS_SS_2012-1.png) | 
 |:--:| 
 | *Average CRPS Skill Scores across Australia for forecasts made in 2012* |
 
 ### MAE comparison
-| ![space-1.jpg](/img/MAE_SS_2012.pdf) | 
+| ![space-1.png](/img/MAE_2012-1.png) | 
 |:--:| 
-| *Average MAE skill scores across Australia for daily precipitation forecasts made on 48 different initialisation dates in 2012* |
+| *Average MAE across Australia for daily precipitation forecasts made on 48 different initialisation dates in 2012* |
 
 ### Visual Results
 
