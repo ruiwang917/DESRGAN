@@ -9,15 +9,35 @@ This work is motivated by a real-world challenge of providing high-resolution an
 
 ## Train
 ### Training data 
-
+####Low resolution
 In 2017, the Australian Meteorology Bureau announced the next generation access series GCM, which was later installed on supercomputers in the office in 2018. A worldwide combined model, the seasonal climate and earth system Simulator (ACCESS-S), is based on the UK's global combined seasonal prediction system glosea5-gc2. The ACCESS-S contains 11 different ensemble members for seasonal forecasting and leading 217 days due to disruptions and improved ensemble technology,  including ten disturbed members and oneunperturbed centre member. 
+####High resolution
+The Australian Water Availability Project (AWAP) is to monitor the state and trend of the terrestrial water balance of the Australian continent, using model-data fusion methods to combine both measurements and modelling. The project determines the past history and present state of soil moisture and all water fluxes contributing to changes in soil moisture (rainfall, transpiration, soil evaporation, surface runoff and deep drainage), across the entire Australian continent at a spatial resolution of 5 km. Using the same basic framework, the project provides soil moistures and water fluxes over the Australian continent in three forms: (1) weekly/monthly near-real-time reporting, (2) monthly/annual historical time series from 1900, and (3) monthly climatologies (on request).
 
-
-
-Bureau of Meteorology Atmospheric high-resolution Regional Reanalysis for Australia(BARRA) is Australia's regional climate prediction and numerical climate forecasts models based on an Australian area, using ACCESS-R, Australia's first atmospheric reanalysis model. ACCESS-R employs the UKMO system other than ACCESS-S. In addition, any uncertainty is not considered in this system. i.e. no ensemble member is present.
-
-In the trainingset, we used 60km Raw atmosphere grid ACCESS-S precipitation data as input and 5km AWAP data as the target.
+In the training set, we used 60km Raw atmosphere grid ACCESS-S precipitation data as input and 5km AWAP data as the target.
 All the data were stored on the project named [ub7](http://www.bom.gov.au/metadata/catalogue/19115/ANZCW0503900697/) and [rr8](http://www.bom.gov.au/metadata/catalogue/19115/ANZCW0503900567/), you need to require permission from [NCI](https://nci.org.au/) on the paths (g/data/ub7/) and (g/data/rr8/) respectively.
+
+### Pre-processing data
+[todo]
+We cropped the data to the same geographic region, with longitude and latitude ranges are 111.975E to 156.275E and 44.525S to 9.975S, respectively. Go to the data_processing folder and type the following commands, and the data will be cropped and relocated:
+
+ ```bash
+    python3 /pre_processing/access_pre.py
+    python3 /pre_processing/awap_pre.py
+ ```
+
+### Begin to train
+[todo]
+
+```bash
+    python train.py 
+```
+
+### Begin to evaluation
+
+```bash
+    python eval_DESRGAN.py 
+```
 
 
 ## Results
