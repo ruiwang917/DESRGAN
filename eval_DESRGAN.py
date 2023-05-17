@@ -53,6 +53,24 @@ def bias_median(ens, hr):
     return np.median(ens, axis=0) - hr
 
 
+def bias_relative(ens, hr, constant=1):
+    '''
+    ens:(ensemble,H,W)
+    hr: (H,W)
+    constant: relative constant
+    '''
+    return (np.mean(ens, axis=0) - hr) / (constant + hr)
+
+
+def bias_relative_median(ens, hr, constant=1):
+    '''
+    ens:(ensemble,H,W)
+    hr: (H,W)
+    constant: relative constant
+    '''
+    return (np.median(ens, axis=0) - hr) / (constant + hr)
+
+
 def rmse(ens, hr):
     '''
     ens:(ensemble,H,W)
@@ -143,7 +161,7 @@ class ACCESS_AWAP_cali(Dataset):
 
                 for en in self.ensemble:
                     access_path = rootdir + en + "/" + \
-                                  date.strftime("%Y-%m-%d") + "_" + en + ".nc"
+                        date.strftime("%Y-%m-%d") + "_" + en + ".nc"
                     #                   print(access_path)
                     if os.path.exists(access_path):
 
@@ -223,7 +241,7 @@ def main(year, days):
     # model configuration
     parser.add_argument('--upscale_factor', '-uf', type=int,
                         default=4, help="super resolution upscale factor")
-    parser.add_argument('--model', '-m', type=str, default='vdsr',
+    parser.add_argument('--model', '-m', type=str, default='DESRGAN',
                         help='choose which model is going to use')
 
     # data
@@ -254,7 +272,7 @@ def main(year, days):
                         default=[111.975, 156.275, -44.525, -9.975], help='dataset directory')
 
     parser.add_argument('--file_ACCESS_dir', type=str,
-                        default="/scratch/iu60/rw6151/Large_Patch/40+log_v3/model_G_i000002/",
+                        default="/scratch/iu60/rw6151/Large_Patch/40+log_v3/model_G_i000004/",
                         help='dataset directory')
     parser.add_argument('--file_AWAP_dir', type=str, default="/scratch/iu60/rw6151/Split_AWAP_masked_total/",
                         help='dataset directory')
@@ -323,6 +341,13 @@ def main(year, days):
         mean_rmse_model = []
         mean_crps_model = []
         mean_bias_median_model = []
+        mean_bias_relative_model = []
+        mean_bias_relative_model_half = []
+        mean_bias_relative_model_1 = []
+        mean_bias_relative_model_2 = []
+        mean_bias_relative_model_2d9 = []
+        mean_bias_relative_model_3 = []
+        mean_bias_relative_model_4 = []
 
         for batch, (pr, hr, _, _, _) in enumerate(test_data):
 
@@ -341,7 +366,19 @@ def main(year, days):
                     bias_DESRGAN = bias(a, b)
                     bias_median_DESRGAN = bias_median(a, b)
                     rmse_DESRGAN = rmse(a, b)
-                    skil_DESRGAN = ps.crps_ensemble(b, np.transpose(a, (1, 2, 0)))
+                    skil_DESRGAN = ps.crps_ensemble(
+                        b, np.transpose(a, (1, 2, 0)))
+                    bias_relative_DESRGAN_half = bias_relative_median(
+                        a, b, constant=0.5)
+                    bias_relative_DESRGAN_1 = bias_relative_median(
+                        a, b, constant=1)
+                    bias_relative_DESRGAN_2 = bias_relative_median(
+                        a, b, constant=2)
+                    bias_relative_DESRGAN_2d9 = bias_relative_median(
+                        a, b, constant=2.9)
+                    bias_relative_DESRGAN_3 = bias_relative(a, b, constant=3)
+                    bias_relative_DESRGAN_4 = bias_relative_median(
+                        a, b, constant=4)
 
                     mean_mae_model.append(mae_DESRGAN)
                     mean_mae_mean_model.append(mae_mean_DESRGAN)
@@ -350,50 +387,93 @@ def main(year, days):
                     mean_bias_median_model.append(bias_median_DESRGAN)
                     mean_rmse_model.append(rmse_DESRGAN)
                     mean_crps_model.append(skil_DESRGAN)
+                    mean_bias_relative_model_half.append(
+                        bias_relative_DESRGAN_half)
+                    mean_bias_relative_model_1.append(bias_relative_DESRGAN_1)
+                    mean_bias_relative_model_2.append(bias_relative_DESRGAN_2)
+                    mean_bias_relative_model_2d9.append(
+                        bias_relative_DESRGAN_2d9)
+                    mean_bias_relative_model_3.append(bias_relative_DESRGAN_3)
+                    mean_bias_relative_model_4.append(bias_relative_DESRGAN_4)
 
-        if not os.path.exists("/scratch/iu60/rw6151/new_crps/save/mae/v3_2/" + str(year)):
-            os.mkdir("/scratch/iu60/rw6151/new_crps/save/mae/v3_2/" + str(year))
-        np.save("/scratch/iu60/rw6151/new_crps/save/mae/v3_2/" + str(year) + "/lead_time" + str(lead) + '_whole',
+        if not os.path.exists("/scratch/iu60/rw6151/new_crps/save/mae/v3_4/" + str(year)):
+            os.mkdir("/scratch/iu60/rw6151/new_crps/save/mae/v3_4/" + str(year))
+        np.save("/scratch/iu60/rw6151/new_crps/save/mae/v3_4/" + str(year) + "/lead_time" + str(lead) + '_whole',
                 np.mean(mean_mae_model, axis=0))
 
-        if not os.path.exists("/scratch/iu60/rw6151/new_crps/save/mae_mean/v3_2/" + str(year)):
-            os.mkdir("/scratch/iu60/rw6151/new_crps/save/mae_mean/v3_2/" + str(year))
+        if not os.path.exists("/scratch/iu60/rw6151/new_crps/save/mae_mean/v3_4/" + str(year)):
+            os.mkdir(
+                "/scratch/iu60/rw6151/new_crps/save/mae_mean/v3_4/" + str(year))
         np.save(
-            "/scratch/iu60/rw6151/new_crps/save/mae_mean/v3_2/" + str(year) + "/lead_time" + str(lead) + '_whole',
+            "/scratch/iu60/rw6151/new_crps/save/mae_mean/v3_4/" +
+            str(year) + "/lead_time" + str(lead) + '_whole',
             np.mean(mean_mae_mean_model, axis=0))
 
-        if not os.path.exists("/scratch/iu60/rw6151/new_crps/save/mae_median/v3_2/" + str(year)):
-            os.mkdir("/scratch/iu60/rw6151/new_crps/save/mae_median/v3_2/" + str(year))
+        if not os.path.exists("/scratch/iu60/rw6151/new_crps/save/mae_median/v3_4/" + str(year)):
+            os.mkdir(
+                "/scratch/iu60/rw6151/new_crps/save/mae_median/v3_4/" + str(year))
         np.save(
-            "/scratch/iu60/rw6151/new_crps/save/mae_median/v3_2/" + str(year) + "/lead_time" + str(lead) + '_whole',
+            "/scratch/iu60/rw6151/new_crps/save/mae_median/v3_4/" +
+            str(year) + "/lead_time" + str(lead) + '_whole',
             np.mean(mean_mae_mediam_model, axis=0))
 
-        if not os.path.exists("/scratch/iu60/rw6151/new_crps/save/bias/v3_2/" + str(year)):
-            os.mkdir("/scratch/iu60/rw6151/new_crps/save/bias/v3_2/" + str(year))
-        np.save("/scratch/iu60/rw6151/new_crps/save/bias/v3_2/" + str(year) + "/lead_time" + str(lead) + '_whole',
+        if not os.path.exists("/scratch/iu60/rw6151/new_crps/save/bias/v3_4/" + str(year)):
+            os.mkdir("/scratch/iu60/rw6151/new_crps/save/bias/v3_4/" + str(year))
+        np.save("/scratch/iu60/rw6151/new_crps/save/bias/v3_4/" + str(year) + "/lead_time" + str(lead) + '_whole',
                 np.mean(mean_bias_model, axis=0))
 
-        if not os.path.exists("/scratch/iu60/rw6151/new_crps/save/bias_median/v3_2/" + str(year)):
-            os.mkdir("/scratch/iu60/rw6151/new_crps/save/bias_median/v3_2/" + str(year))
+        if not os.path.exists("/scratch/iu60/rw6151/new_crps/save/bias_median/v3_4/" + str(year)):
+            os.mkdir(
+                "/scratch/iu60/rw6151/new_crps/save/bias_median/v3_4/" + str(year))
         np.save(
-            "/scratch/iu60/rw6151/new_crps/save/bias_median/v3_2/" + str(year) + "/lead_time" + str(lead) + '_whole',
+            "/scratch/iu60/rw6151/new_crps/save/bias_median/v3_4/" +
+            str(year) + "/lead_time" + str(lead) + '_whole',
             np.mean(mean_bias_median_model, axis=0))
 
-        if not os.path.exists("/scratch/iu60/rw6151/new_crps/save/rmse/v3_2/" + str(year)):
-            os.mkdir("/scratch/iu60/rw6151/new_crps/save/rmse/v3_2/" + str(year))
-        np.save("/scratch/iu60/rw6151/new_crps/save/rmse/v3_2/" + str(year) + "/lead_time" + str(lead) + '_whole',
+        if not os.path.exists("/scratch/iu60/rw6151/new_crps/save/rmse/v3_4/" + str(year)):
+            os.mkdir("/scratch/iu60/rw6151/new_crps/save/rmse/v3_4/" + str(year))
+        np.save("/scratch/iu60/rw6151/new_crps/save/rmse/v3_4/" + str(year) + "/lead_time" + str(lead) + '_whole',
                 np.mean(mean_rmse_model, axis=0))
 
-        if not os.path.exists("/scratch/iu60/rw6151/new_crps/save/crps_ss/v3_2/" + str(year)):
-            os.mkdir("/scratch/iu60/rw6151/new_crps/save/crps_ss/v3_2/" + str(year))
-        np.save("/scratch/iu60/rw6151/new_crps/save/crps_ss/v3_2/" + str(year) + "/lead_time" + str(lead) + '_whole',
+        if not os.path.exists("/scratch/iu60/rw6151/new_crps/save/crps_ss/v3_4/" + str(year)):
+            os.mkdir("/scratch/iu60/rw6151/new_crps/save/crps_ss/v3_4/" + str(year))
+        np.save("/scratch/iu60/rw6151/new_crps/save/crps_ss/v3_4/" + str(year) + "/lead_time" + str(lead) + '_whole',
                 np.mean(mean_crps_model, axis=0))
+
+        if not os.path.exists("/scratch/iu60/rw6151/new_crps/save/bias_relative/v3_4/" + str(year)):
+            os.mkdir(
+                "/scratch/iu60/rw6151/new_crps/save/bias_relative/v3_4/" + str(year))
+
+        np.save(
+            "/scratch/iu60/rw6151/new_crps/save/bias_relative_median/0.5/v3_4/" + str(year) + "/lead_time" + str(
+                lead) + '_whole',
+            np.mean(mean_bias_relative_model_half, axis=0))
+        np.save(
+            "/scratch/iu60/rw6151/new_crps/save/bias_relative_median/1/v3_4/" + str(year) + "/lead_time" + str(
+                lead) + '_whole',
+            np.mean(mean_bias_relative_model_1, axis=0))
+        np.save(
+            "/scratch/iu60/rw6151/new_crps/save/bias_relative_median/2/v3_4/" + str(year) + "/lead_time" + str(
+                lead) + '_whole',
+            np.mean(mean_bias_relative_model_2, axis=0))
+        np.save(
+            "/scratch/iu60/rw6151/new_crps/save/bias_relative_median/2.9/v3_4/" + str(year) + "/lead_time" + str(
+                lead) + '_whole',
+            np.mean(mean_bias_relative_model_2d9, axis=0))
+        np.save(
+            "/scratch/iu60/rw6151/new_crps/save/bias_relative/3/v3_4/" + str(year) + "/lead_time" + str(
+                lead) + '_whole',
+            np.mean(mean_bias_relative_model_3, axis=0))
+        np.save(
+            "/scratch/iu60/rw6151/new_crps/save/bias_relative_median/4/v3_4/" + str(year) + "/lead_time" + str(
+                lead) + '_whole',
+            np.mean(mean_bias_relative_model_4, axis=0))
 
 
 if __name__ == '__main__':
-    main(year=2002, days=30)
+    main(year=2002, days=217)
     print('2002done')
-    main(year=2007, days=30)
+    main(year=2007, days=217)
     print('2007done')
-    main(year=2012, days=7)
+    main(year=2012, days=217)
     print('2012done')
