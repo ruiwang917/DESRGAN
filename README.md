@@ -1,5 +1,5 @@
 # DESRGAN: Downscaling with Enhanced Super-Resolution Generative Adversarial Network (DESRGAN)
-**Generative Deep Learning for Downscaling Long Lead Time Daily Precipitation Ensemble Forecasts**
+
 The python code was developed to efficiently to generate daily precipitation forecasts for the whole Australia by correcting possible errors in seasonal climate forecasts from climate models like ACCESS-S1 using several deep learning blocks of Generative Adversarial Network (GAN) and its variants. It generated 8x high-resolution (5km) daily precipitation for upcoming seasons, up to 217 days. Visually plausible high-resolution precitation forecasts could be found at the bottom.
 
 The python code was mainly developed and implemented by Rui Wang and [Warren Jin](https://people.csiro.au/J/W/Warren-Jin).
