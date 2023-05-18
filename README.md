@@ -1,5 +1,8 @@
-# DESRGAN
+# DESRGAN: Downscaling with Enhanced Super-Resolution Generative Adversarial Network (DESRGAN)
+**Generative Deep Learning for Downscaling Long Lead Time Daily Precipitation Ensemble Forecasts**
+The python code was developed to efficiently to generate daily precipitation forecasts for the whole Australia by correcting possible errors in seasonal climate forecasts from climate models like ACCESS-S1 using several deep learning blocks of Generative Adversarial Network (GAN) and its variants. It generated 8x high-resolution (5km) daily precipitation for upcoming seasons, up to 217 days. Visually plausible high-resolution precitation forecasts could be found at the bottom.
 
+The python code was mainly developed and implemented by Rui Wang and [Warren Jin](https://people.csiro.au/J/W/Warren-Jin).
 
 ## Introduction
 This work is motivated by a real-world challenge of providing high-resolution and skilful daily weather forecasts for upcoming months, which are of huge value to climate-sensitive sectors. Such Seasonal Climate Forecasts (SCF) are routinely provided by General Circulation Models (GCM), but need downscaling techniques to increase spatial resolution and consistency with local observations. Current operational downscaling techniques, such as Quantile Mapping (QM), learn pre-specified relationships between local observations and GCM hindcasts to provide SCFs with limited improvement. Promising downscaling techniques based on Single Image Super-Resolution (SISR) have been developed but only on simplified situations. We formulate the downscaling daily rainfall ensemble forecast problem as an optimisation problem and provide SISR models as candidates. According to characteristics of daily rainfall forecsts, we develop 8 times SISR techniques based on Generative Adversarial Network (GAN) by including outstanding SISR building blocks. A model called Downscaling with Enhanced Super-Resolution GAN (DESRGAN) is finalised using an ensemble forecast skill metric Continuous Ranked Probability Score (CRPS), and tested on downscaling 60km ACCESS-S1 rainfall forecasts to 5km with lead time up to 216 days in Australia. Testing results on three representative years illustrate DESRGAN has higher forecast accuracy and skills, measured by mean absolute error and CRPS respectively, than bicubic interpolation, QM, another SISR-based downscaling technique VDSR, and a long-standing SCF benchmark, climatology. This is the first time that, as far as we know, downscaled SCFs outperform the benchmark in general, and demonstrates the potential of deep-learning for SCF downscaling operation after more development. 
@@ -40,7 +43,7 @@ We cropped the data to the same geographic region, with longitude and latitude r
 ```
 
 
-## Results
+## Some results
 ### CRPS comparison
 | ![space-1.png](/img/CRPS_SS_2012-1.png) | 
 |:--:| 
@@ -55,5 +58,6 @@ We cropped the data to the same geographic region, with longitude and latitude r
 
 | ![Watch the video](/img/visual.gif) | 
 |:--:| 
-| *Example of ensemble_1 comparison* |
+| *Visually plausible 5km precipitation forecasts (ensemble_1 only). Note the lead time changes as indicated in the left-hand panel, so is the target date in the right-hand panel* |
+
 
